@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from '@emotion/core';
+import Router from 'next/router';
 import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit, Error } from '../components/ui/form';
+
+import firebase from '../firebase';
 
 import useValidate from '../hooks/useValidate';
 import validateSignUp from '../validation/validateSignUp';
@@ -14,12 +17,20 @@ const INITIAL_STATE = {
 
 const SignUp = () => {
 
+    const [error, setError] = useState('');
+
     const { dataForm, errors, handleChange, handleSubmit, handlerBlur } = useValidate(INITIAL_STATE, validateSignUp, createCount);
 
     const  {name, email, password } = dataForm;
 
-    function createCount() {
-        console.log('Create Count');
+    async function createCount() {
+        try {
+            await firebase.register(name, email, password);
+            Router.push('/');
+        } catch (err) {
+            console.log('Error to create an user', err.message);
+            setError(err.message);
+        }
     }
  
     return (
@@ -74,6 +85,7 @@ const SignUp = () => {
                             />
                         </Field>
                         {errors.password && <Error>{errors.password}</Error>}
+                        {error && <Error>{error}</Error>}
                         <InputSubmit 
                             type="submit"
                             value= "Sign Up"
