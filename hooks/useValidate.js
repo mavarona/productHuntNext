@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 const useValidate = (stateInicial, validateForm, fn) => {
 
-    const [dataForm, setDataForm ] = useState(stateInicial);
-    const [errors, setErrors ] = useState({});
-    const [submitForm, setSubmitForm ] = useState(false);
+    const [dataForm, setDataForm] = useState(stateInicial);
+    const [errors, setErrors] = useState({});
+    const [submitForm, setSubmitForm] = useState(false);
 
     useEffect(() => {
-        if(submitForm) {
+        if (submitForm) {
             const noErrors = Object.keys(errors).length === 0;
 
-            if(noErrors) {
-                fn(); 
+            if (noErrors) {
+                fn();
             }
             setSubmitForm(false);
         }
@@ -20,7 +20,7 @@ const useValidate = (stateInicial, validateForm, fn) => {
     const handleChange = e => {
         setDataForm({
             ...dataForm,
-            [e.target.name] : e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
@@ -31,12 +31,18 @@ const useValidate = (stateInicial, validateForm, fn) => {
         setSubmitForm(true);
     }
 
+    const handlerBlur = () => {
+        const errorsValidation = validateForm(dataForm);
+        setErrors(errorsValidation);
+    }
+
     return {
-        dataForm, 
-        errors, 
+        dataForm,
+        errors,
         handleSubmit,
-        handleChange
+        handleChange,
+        handlerBlur
     }
 }
- 
+
 export default useValidate;
