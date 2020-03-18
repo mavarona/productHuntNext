@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { css } from '@emotion/core';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit, Error } from '../components/ui/form';
 
-import firebase from '../firebase';
+import { FirebaseContext } from '../firebase';
 
 import useValidate from '../hooks/useValidate';
 import validateCreateProduct from '../validation/validateCreateProduct';
@@ -24,8 +24,27 @@ const NewProduct = () => {
 
     const  {name, company, imageProduct, url, description } = dataForm;
 
+    const router = useRouter();
+
+    const { user, firebase} = useContext(FirebaseContext);
+
     async function createProduct() {
-        console.log('create product');
+        if(!user){
+            return router.push('/login');
+        }
+
+        const product = {
+            name,
+            company,
+            url,
+            description,
+            vote: 0,
+            comments: [],
+            createdAt: Date.now()
+        }
+
+        firebase.db.collection('products').add(product);
+
     }
  
     return (
