@@ -34,6 +34,7 @@ const Product = () => {
     const [product, saveProduct] = useState({});
     const [error, saveError] = useState(false);
     const [comment, setComment] = useState({});
+    const [queryDB, setQueryDB] = useState(true);
 
     const router = useRouter();
     const { query: {id} } = router;
@@ -41,21 +42,23 @@ const Product = () => {
     const {firebase, user } = useContext(FirebaseContext);
 
     useEffect( () => {
-        if(id){
+        if(id && queryDB){
             const getProduct = async() => {
                 const productQuery = await firebase.db.collection('products').doc(id);
                 const product = await productQuery.get();
                 if(product.exists){
                     saveProduct(product.data());
+                    setQueryDB(false);
                 }else{
                     saveError(true);
+                    setQueryDB(false);
                 }
             }
             getProduct();
         }
-    }, [id, product]);
+    }, [id]);
 
-    if(Object.keys(product).length === 0) return 'Loading...';
+    if(Object.keys(product).length === 0 && !error ) return 'Loading...';
 
     const { name, company, url, urlImage, description, votes, comments, createdAt, creator, hasVoted} = product;
 
@@ -80,7 +83,9 @@ const Product = () => {
         saveProduct({
             ...product,
             votes: newTotal
-        })
+        });
+
+        setQueryDB(true);
 
     }
     
@@ -112,17 +117,53 @@ const Product = () => {
             comments: newComments
         });
 
+        setQueryDB(true);
+
     }
 
     const isCreator = id => {
         return creator.id === id;
     }
 
+    const canDelete = () => {
+        
+        if(!user){
+            return false;
+        }
+
+        if(creator.id === user.uid){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    const deleteProduct = async () => {
+
+        if(!user){
+            return router.push('/login');
+        }
+
+        if(creator.id !== user.id){
+            return router.push('/');
+        }
+
+        try {
+            await firebase.db.collection('products').doc(id).delete();
+            router.push('/');
+            
+        } catch (err) {
+            console.log(err);
+        }
+
+    }
+
     return ( 
         <Layout>
             <>
-                {error && <Error404/>}
-                <div className="contenedor">
+                {error ? <Error404/> : (
+                    <div className="contenedor">
                     <h1 css={css`
                         text-align: center;
                         margin-top: 5rem;
@@ -206,7 +247,16 @@ const Product = () => {
                             }
                         </aside>                    
                     </ContainerProduct>
-                </div>
+
+                    { canDelete() && 
+                        <Button
+                            onClick={deleteProduct}
+                        >
+                            Delete Product</Button>
+                     }
+                </div>                   
+                ) }
+ 
             </>
         </Layout>
      )

@@ -23,10 +23,10 @@ const Nav = () => {
 
     return(
         <Navig>
-            <Link href="/">Home</Link>
-            <Link href="/popular">Popular</Link>
+            <Link href="/"><a>Home</a></Link>
+            <Link href="/popular"><a>Popular</a></Link>
             {user && (
-                <Link href="/new-product">New Product</Link>
+                <Link href="/new-product"><a>New Product</a></Link>
             )}
         </Navig>
     )
