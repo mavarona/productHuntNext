@@ -19,6 +19,16 @@ const ContainerProduct = styled.div`
    }
 `;
 
+const CreatorProduct = styled.p`
+    padding: .5rem 2rem;
+    background-color: #DA552F;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+`
+
 const Product = () => {
 
     const [product, saveProduct] = useState({});
@@ -104,6 +114,10 @@ const Product = () => {
 
     }
 
+    const isCreator = id => {
+        return creator.id === id;
+    }
+
     return ( 
         <Layout>
             <>
@@ -167,6 +181,7 @@ const Product = () => {
                                                     {' '}{comment.name}
                                                 </span>
                                             </p>
+                                            { isCreator(comment.userId) && <CreatorProduct>Is Creator</CreatorProduct> }
                                         </li>
                                     ))}    
                                 </ul>
