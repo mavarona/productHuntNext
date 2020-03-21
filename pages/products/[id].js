@@ -9,6 +9,7 @@ import Error404 from '../../components/layout/Error404';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Field, InputSubmit } from '../../components/ui/form';
+import Button from '../../components/ui/Button';
  
 const ContainerProduct = styled.div`
    @media (min-width:768px) {
@@ -45,7 +46,11 @@ const Product = () => {
 
     if(Object.keys(product).length === 0) return 'Loading...';
 
-    const { name, company, url, urlImage, description, votes, comments, createdAt} = product;
+    const { name, company, url, urlImage, description, votes, comments, createdAt, creator} = product;
+
+    const voteProduct = () => {
+        
+    } 
 
     return ( 
         <Layout>
@@ -61,6 +66,7 @@ const Product = () => {
                     <ContainerProduct>
                         <div>
                             <p>Publicado hace: { formatDistanceToNow( new Date(createdAt), {locale: es} )} </p>
+                            <p>By: {creator.name} of {company} </p>
                             <img src={urlImage} />
                             <p>{description}</p>
 
@@ -88,6 +94,19 @@ const Product = () => {
                             </form>
                         </div>
                         <aside>
+                            <Button
+                                target="_blank"
+                                bgColor="true"
+                                href={url}
+                            >Visit URL</Button>
+                            <p css={css`
+                                        text-align: center;
+                            `}>{votes} Votes</p>
+                            <Button
+                                onClick={voteProduct}
+                            >
+                                Vote
+                            </Button>
                         </aside>                    
                     </ContainerProduct>
                 </div>

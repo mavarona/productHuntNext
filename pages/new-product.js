@@ -48,7 +48,11 @@ const NewProduct = () => {
                 description,
                 votes: 0,
                 comments: [],
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                creator: {
+                    id: user.uid,
+                    name: user.displayName
+                }
             }
 
             firebase.db.collection('products').add(product);
@@ -109,13 +113,13 @@ const NewProduct = () => {
                 value = { name }
                 onChange = { handleChange }
                 onBlur = { handlerBlur }
-                /> <
-                /Field> {
+                /> < /
+                Field > {
                     errors.name && < Error > { errors.name } < /Error>} <
-                        Field >
-                        <
-                        label htmlFor = "company" > Company < /label> <
-                        input
+                    Field >
+                    <
+                    label htmlFor = "company" > Company < /label> <
+                    input
                     type = "text"
                     id = "company"
                     placeholder = "Company"
@@ -123,13 +127,13 @@ const NewProduct = () => {
                     value = { company }
                     onChange = { handleChange }
                     onBlur = { handlerBlur }
-                    /> <
-                    /Field> {
+                    /> < /
+                    Field > {
                         errors.company && < Error > { errors.company } < /Error>} <
-                            Field >
-                            <
-                            label htmlFor = "imageProduct" > Image < /label> <
-                            FileUploader
+                        Field >
+                        <
+                        label htmlFor = "imageProduct" > Image < /label> <
+                        FileUploader
                         accept = "image"
                         id = "imageProduct"
                         name = "imageProduct"
@@ -139,12 +143,12 @@ const NewProduct = () => {
                         onUploadError = { handleUploadError }
                         onUploadSuccess = { handleUploadSuccess }
                         onProgress = { handleProgress }
-                        /> <
-                        /Field> <
+                        /> < /
+                        Field > <
                         Field >
-                            <
-                            label htmlFor = "url" > URL < /label> <
-                            input
+                        <
+                        label htmlFor = "url" > URL < /label> <
+                        input
                         type = "url"
                         id = "url"
                         name = "url"
@@ -152,37 +156,37 @@ const NewProduct = () => {
                         value = { url }
                         onChange = { handleChange }
                         onBlur = { handlerBlur }
-                        /> <
-                        /Field> {
-                            errors.url && < Error > { errors.url } < /Error>} <
-                                /fieldset> <
-                                fieldset >
-                                <
-                                legend > About Product < /legend> <
-                                Field >
-                                <
-                                label htmlFor = "description" > Description < /label> <
-                                textarea
+                        /> < /
+                        Field > {
+                            errors.url && < Error > { errors.url } < /Error>} < /
+                            fieldset > <
+                            fieldset >
+                            <
+                            legend > About Product < /legend> <
+                            Field >
+                            <
+                            label htmlFor = "description" > Description < /label> <
+                            textarea
                             id = "description"
                             name = "description"
                             value = { description }
                             onChange = { handleChange }
                             onBlur = { handlerBlur }
-                            /> <
-                            /Field> {
-                                errors.description && < Error > { errors.description } < /Error>} <
-                                    /fieldset> {
-                                        error && < Error > { error } < /Error>} <
-                                            InputSubmit
-                                        type = "submit"
-                                        value = "Create Product" /
-                                            >
-                                            <
-                                            /Form> <
-                                            /> <
-                                            /Layout> <
-                                            /div>
-                                    )
+                            /> < /
+                            Field > {
+                                errors.description && < Error > { errors.description } < /Error>} < /
+                                fieldset > {
+                                    error && < Error > { error } < /Error>} <
+                                    InputSubmit
+                                    type = "submit"
+                                    value = "Create Product" /
+                                    >
+                                    <
+                                    /Form> < /
+                                    > <
+                                    /Layout> < /
+                                    div >
+                                )
                             }
 
                             export default NewProduct;
