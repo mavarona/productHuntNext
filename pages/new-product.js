@@ -6,6 +6,7 @@ import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit, Error } from '../components/ui/form';
 
 import { FirebaseContext } from '../firebase';
+import Error404 from '../components/layout/Error404';
 
 import useValidate from '../hooks/useValidate';
 import validateCreateProduct from '../validation/validateCreateProduct';
@@ -52,7 +53,8 @@ const NewProduct = () => {
                 creator: {
                     id: user.uid,
                     name: user.displayName
-                }
+                },
+                hasVoted: []
             }
 
             firebase.db.collection('products').add(product);
@@ -86,107 +88,99 @@ const NewProduct = () => {
                 });
         };
 
-        return ( <
-                div >
-                <
-                Layout >
-                <
-                >
-                <
-                h1 css = { css `
-                            text-align: center;
-                            margin-top: 5rem;
-                        ` } >
-                New Product < /h1> <
-                Form onSubmit = { handleSubmit } >
-                <
-                fieldset >
-                <
-                legend > Information Product < /legend> <
-                Field >
-                <
-                label htmlFor = "name" > Name < /label> <
-                input type = "text"
-                id = "name"
-                placeholder = "Name"
-                name = "name"
-                value = { name }
-                onChange = { handleChange }
-                onBlur = { handlerBlur }
-                /> < /
-                Field > {
-                    errors.name && < Error > { errors.name } < /Error>} <
-                    Field >
-                    <
-                    label htmlFor = "company" > Company < /label> <
-                    input
-                    type = "text"
-                    id = "company"
-                    placeholder = "Company"
-                    name = "company"
-                    value = { company }
-                    onChange = { handleChange }
-                    onBlur = { handlerBlur }
-                    /> < /
-                    Field > {
-                        errors.company && < Error > { errors.company } < /Error>} <
-                        Field >
-                        <
-                        label htmlFor = "imageProduct" > Image < /label> <
-                        FileUploader
-                        accept = "image"
-                        id = "imageProduct"
-                        name = "imageProduct"
-                        randomizeFilename
-                        storageRef = { firebase.storage.ref("products") }
-                        onUploadStart = { handleUploadStart }
-                        onUploadError = { handleUploadError }
-                        onUploadSuccess = { handleUploadSuccess }
-                        onProgress = { handleProgress }
-                        /> < /
-                        Field > <
-                        Field >
-                        <
-                        label htmlFor = "url" > URL < /label> <
-                        input
-                        type = "url"
-                        id = "url"
-                        name = "url"
-                        placeholder = "Url Product"
-                        value = { url }
-                        onChange = { handleChange }
-                        onBlur = { handlerBlur }
-                        /> < /
-                        Field > {
-                            errors.url && < Error > { errors.url } < /Error>} < /
-                            fieldset > <
-                            fieldset >
-                            <
-                            legend > About Product < /legend> <
-                            Field >
-                            <
-                            label htmlFor = "description" > Description < /label> <
-                            textarea
-                            id = "description"
-                            name = "description"
-                            value = { description }
-                            onChange = { handleChange }
-                            onBlur = { handlerBlur }
-                            /> < /
-                            Field > {
-                                errors.description && < Error > { errors.description } < /Error>} < /
-                                fieldset > {
-                                    error && < Error > { error } < /Error>} <
-                                    InputSubmit
+        return (
+             <div>
+                <Layout>
+                    { !user ? <Error404 /> :
+                        (
+                            <>
+                                <h1 css = { css `
+                                            text-align: center;
+                                            margin-top: 5rem;
+                                `}>New Product </h1> 
+                                <Form onSubmit = { handleSubmit } >
+                                    <fieldset>
+                                        <legend> Information Product </legend> 
+                                        <Field>
+                                            <label htmlFor = "name"> Name </label> 
+                                            <input type = "text"
+                                                id = "name"
+                                                placeholder = "Name"
+                                                name = "name"
+                                                value = { name }
+                                                onChange = { handleChange }
+                                                onBlur = { handlerBlur }
+                                                /> 
+                                        </Field> 
+                                    {errors.name && <Error> { errors.name } </Error>} 
+                                    <Field>
+                                        <label htmlFor = "company"> Company </label> 
+                                        <input
+                                            type = "text"
+                                            id = "company"
+                                            placeholder = "Company"
+                                            name = "company"
+                                            value = { company }
+                                            onChange = { handleChange }
+                                            onBlur = { handlerBlur }
+                                            /> 
+                                    </Field>
+                                    {errors.company && <Error> { errors.company } </Error>} 
+                                    <Field >
+                                        <label htmlFor = "imageProduct"> Image </label> 
+                                        <FileUploader
+                                            accept = "image"
+                                            id = "imageProduct"
+                                            name = "imageProduct"
+                                            randomizeFilename
+                                            storageRef = { firebase.storage.ref("products") }
+                                            onUploadStart = { handleUploadStart }
+                                            onUploadError = { handleUploadError }
+                                            onUploadSuccess = { handleUploadSuccess }
+                                            onProgress = { handleProgress }
+                                        /> 
+                                    </Field> 
+                                    <Field>
+                                        <label htmlFor = "url"> URL </label> 
+                                        <input
+                                            type = "url"
+                                            id = "url"
+                                            name = "url"
+                                            placeholder = "Url Product"
+                                            value = { url }
+                                            onChange = { handleChange }
+                                            onBlur = { handlerBlur }
+                                        /> 
+                                    </Field> 
+                                    {errors.url && < Error > { errors.url } </Error>} 
+                                </fieldset> 
+                                <fieldset>
+                                    <legend > About Product </legend> 
+                                    <Field> 
+                                        <label htmlFor = "description" > Description </label> 
+                                        <textarea
+                                            id = "description"
+                                            name = "description"
+                                            value = { description }
+                                            onChange = { handleChange }
+                                            onBlur = { handlerBlur }
+                                            /> 
+                                    </Field> 
+                                    {errors.description && < Error > { errors.description } </Error>} 
+                                </fieldset> 
+                                {error && <Error> { error } </Error>} 
+                                <InputSubmit
                                     type = "submit"
                                     value = "Create Product" /
                                     >
-                                    <
-                                    /Form> < /
-                                    > <
-                                    /Layout> < /
-                                    div >
-                                )
-                            }
+                            </Form> 
+                        </> 
+                        )
+                    }
+                    
+        </Layout>
+    </div>
+    )
+}
 
                             export default NewProduct;

@@ -23,11 +23,12 @@ const Product = () => {
 
     const [product, saveProduct] = useState({});
     const [error, saveError] = useState(false);
+    const [comment, setComment] = useState({});
 
     const router = useRouter();
     const { query: {id} } = router;
 
-    const {firebase } = useContext(FirebaseContext);
+    const {firebase, user } = useContext(FirebaseContext);
 
     useEffect( () => {
         if(id){
@@ -42,15 +43,66 @@ const Product = () => {
             }
             getProduct();
         }
-    }, [id]);
+    }, [id, product]);
 
     if(Object.keys(product).length === 0) return 'Loading...';
 
-    const { name, company, url, urlImage, description, votes, comments, createdAt, creator} = product;
+    const { name, company, url, urlImage, description, votes, comments, createdAt, creator, hasVoted} = product;
 
     const voteProduct = () => {
+        if(!user) {
+            return router.push('/login')
+        }
+
+        const newTotal = Number(votes) + 1;
+
+        if(hasVoted.includes(user.uid) ) return;
+
+        const newHasVoted = [...hasVoted, user.uid];
+
+        //  Actualizar en la BD
+        firebase.db.collection('products').doc(id).update({ 
+            votes: newTotal,
+            hasVoted: newHasVoted
+        });
+
+        // Actualizar el state
+        saveProduct({
+            ...product,
+            votes: newTotal
+        })
+
+    }
+    
+    const handleChangeComment = e => {
+        setComment({
+            ...comment,
+            [e.target.name] : e.target.value
+        })
+    }
+
+    const addComment = e => {
+        e.preventDefault();
+
+        if(!user){
+            return router.push('/login');
+        }
+
+        comment.userId = user.uid;
+        comment.name = user.displayName;
         
-    } 
+        const newComments = [...comments, comment];
+
+        firebase.db.collection('products').doc(id).update({
+            comments: newComments
+        });
+
+        saveProduct({
+            ...product,
+            comments: newComments
+        });
+
+    }
 
     return ( 
         <Layout>
@@ -70,28 +122,55 @@ const Product = () => {
                             <img src={urlImage} />
                             <p>{description}</p>
 
-                            <h2>Add Comment</h2>
-                            <form>
-                                <Field>
-                                    <input 
-                                        type="text"
-                                        name="message"
-                                    />
-                                </Field>
-                                <InputSubmit 
-                                    type="submit"
-                                    value="Add Comment"
-                                />
-                                <h2 css={css`
+                            { user && (
+                                <>
+                                    <h2>Add Comment</h2>
+                                    <form 
+                                        onSubmit={addComment}
+                                    >
+                                        <Field>
+                                            <input 
+                                                type="text"
+                                                name="message"
+                                                onChange={handleChangeComment}
+                                            />
+                                        </Field>
+                                        <InputSubmit 
+                                            type="submit"
+                                            value="Add Comment"
+                                        />
+                                    </form>
+                                </> 
+                            ) }
+
+                            <h2 css={css`
                                     margin: 2rem;
                                 `}>Comments</h2>
-                                {comments.map(comment => (
-                                    <li>
-                                        <p>{comment.name}</p>
-                                        <p>Published by: {comment.userName}</p>
-                                    </li>
-                                ))}
-                            </form>
+                                {comments.length === 0 ? 'No Comments' :
+                                (
+                                    <ul>
+                                    {comments.map((comment, i) => (
+                                        <li
+                                            key={`${comment.userId}-${i}`}
+                                            css={css`
+                                                border: 1px solid #e1e1e1;
+                                                padding: 2rem;
+                                            `}
+                                        >
+                                            <p>{comment.message}</p>
+                                            <p>Published by: 
+                                                <span
+                                                    css={css`
+                                                        font-weight: bold;
+                                                    `}
+                                                >
+                                                    {' '}{comment.name}
+                                                </span>
+                                            </p>
+                                        </li>
+                                    ))}    
+                                </ul>
+                                )}
                         </div>
                         <aside>
                             <Button
@@ -102,11 +181,14 @@ const Product = () => {
                             <p css={css`
                                         text-align: center;
                             `}>{votes} Votes</p>
-                            <Button
-                                onClick={voteProduct}
-                            >
-                                Vote
-                            </Button>
+                            { user && (
+                                    <Button
+                                    onClick={voteProduct}
+                                >
+                                    Vote
+                                </Button>
+                                )
+                            }
                         </aside>                    
                     </ContainerProduct>
                 </div>
